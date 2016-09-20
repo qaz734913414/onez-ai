@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: ai.device.dialog.php 2657 2016-09-09 09:18:26Z onez $
+ * $Id: ai.device.dialog.php 2789 2016-09-20 21:59:26Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -79,6 +79,11 @@ ONEZ;
   //发送一条信息
   function send(){
     $data=onez('ai')->init($this)->input($_POST);
+    onez()->output($data);
+  }
+  //请求ai发送一条消息
+  function aisay(){
+    $data=onez('ai')->init($this)->aisay($_POST);
     onez()->output($data);
   }
   //触发一条默认消息

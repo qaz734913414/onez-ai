@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: dialog.php 4353 2016-09-09 05:04:02Z onez $
+ * $Id: dialog.php 5268 2016-09-14 13:59:06Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -48,8 +48,19 @@ onez('event')->load('miniwin')->args();
   <section>
     <!--左侧，显示系统信息-->
     <aside class="onez-left system-info">
-      <dt>在线用户</dt>
-      <dd class="onez-auto" id="userlist"></dd>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs nav-justified" role="tablist">
+        <li role="presentation" class="active"><a href="#userlist" role="tab" data-toggle="tab">在线用户</a></li>
+        <li role="presentation"><a href="#lastlist" id="btn-lastlist" role="tab" data-toggle="tab">来访记录</a></li>
+        <li role="presentation"><a href="#justlist" id="btn-justlist" role="tab" data-toggle="tab">刚才来过</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content onez-auto">
+        <div role="tabpanel" class="tab-pane active userlist" id="userlist"></div>
+        <div role="tabpanel" class="tab-pane userlist" id="lastlist"></div>
+        <div role="tabpanel" class="tab-pane userlist" id="justlist"></div>
+      </div>
     </aside>
     <!--聊天主窗口-->
     <div class="onez-body system-main">
@@ -66,7 +77,8 @@ onez('event')->load('miniwin')->args();
       <!--输入区-->
       <div class="onez-btns">
         <div class="pull-left">
-          <input type="checkbox" id="asrule" checked /> 保存为规则，下次同样的消息自动回复此内容
+          <!--<input type="checkbox" id="asrule" checked /> 保存为规则，下次同样的消息自动回复此内容-->
+          <button type="button" class="btn btn-sm btn-info" id="btn-mode" title="点击切换模式">当前为自动模式</button>
         </div>
         <div class="pull-right">
           <button type="button" class="btn btn-sm btn-success" id="sendbtn">发送</button>
@@ -129,5 +141,7 @@ function closeWin(){
 <?
 echo onez('ai.admin')->doit(array('is_dialog'=>1));
 onez('onezjs')->init();
+onez('sound.play')->init();
 onez('ai')->js();
+onez('websocket')->init($G['myid']);
 $dialog->footer();#显示底部?>

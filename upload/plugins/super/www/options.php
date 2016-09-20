@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: options.php 1932 2016-09-09 05:27:50Z onez $
+ * $Id: options.php 1939 2016-09-20 09:23:40Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -23,7 +23,9 @@
 
 
 !defined('IN_ONEZ') && exit('Access Denied');
-define('CUR_URL',onez('super')->www('/options.php'));
+define('CUR_URL',onez()->href('/options.php'));
+
+onez('db');
 
 $G['title']='网站参数设置';
 $btnname='保存修改';

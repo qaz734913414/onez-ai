@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: dialog.php 2456 2016-09-09 05:05:24Z onez $
+ * $Id: dialog.php 2681 2016-09-20 17:13:38Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -40,7 +40,7 @@ $dialog->header();
 
 <div class="onez-dialog">
   <!--对话框顶部，永远在最底-->
-  <header></header>
+  <header><?=$G['dialog.header']?></header>
   <section>
     <!--左侧，显示系统信息-->
     <aside class="onez-left system-info">
@@ -51,6 +51,7 @@ $dialog->header();
       <div class="myinfo-summary onez-auto">
         <p><?=onez('ai')->info('myinfo')?></p>
       </div>
+      <?=$G['dialog.left']?>
     </aside>
     <!--聊天主窗口-->
     <div class="onez-body system-main">
@@ -76,19 +77,26 @@ $dialog->header();
       </div>
     </div>
     <!--联想展示区域-->
-    <aside class="onez-right system-help"></aside>
+    <aside class="onez-right system-help">
+<?=$G['dialog.right']?>
+    </aside>
   </section>
   <!--对话框底部，永远在最底-->
   <footer>
     <p class="intro">
-      技术支持：<a href="http://www.onez.cn/" target="_blank">佳蓝科技</a> &nbsp; 
+      <?=$G['dialog.footer']?$G['dialog.footer']:'技术支持：<a href="http://www.onez.cn/" target="_blank">佳蓝科技</a> &nbsp; 
       基于<a href="http://xl.onez.cn/" target="_blank">onezphp</a>框架开发 &nbsp; 
       技术交流群：185490966 <a href="http://shang.qq.com/wpa/qunwpa?idkey=f7860dfb3e265264f9f359285de578f4fede15f6e8ef183614cdd11645922463" title="佳蓝人工智能开源框架" target="_blank"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="佳蓝人工智能开源框架"></a> &nbsp; 
-      <a href="http://ai.bbs.onez.cn/" target="_blank">论坛交流</a> &nbsp; 
+      <a href="http://ai.bbs.onez.cn/" target="_blank">论坛交流</a> &nbsp; '?>
+      
     </p>
   </footer>
 </div>
 <?
 onez('onezjs')->init();
+onez('sound.play')->init();
+if($G['mode']){
+  onez($G['mode'])->init_dialog();
+}
 onez('ai')->js();
 $dialog->footer();#显示底部?>

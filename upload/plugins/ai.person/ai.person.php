@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: ai.person.php 2873 2016-09-09 03:48:24Z onez $
+ * $Id: ai.person.php 4592 2016-09-20 22:17:26Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -42,7 +42,11 @@ class onezphp_ai_person extends onezphp{
       if($this->persons[$id]){
         return $this->persons[$id];
       }
-      $T=onez('db')->open('person')->one("id='$id' or udid='$id'");
+      if(preg_match('/^[0-9]+$/',$id)){
+        $T=onez('db')->open('person')->one("id='$id'");
+      }else{
+        $T=onez('db')->open('person')->one("udid='$id'");
+      }
     }
     if(!$T){
       return $this;
@@ -50,7 +54,8 @@ class onezphp_ai_person extends onezphp{
     $person=new onezphp_ai_person();
     $person->cls=$this;
     $person->create($T);
-    $this->persons[$id]=$person;
+    $this->persons[$person->id]=$person;
+    $this->persons[$person->udid]=$person;
     return $person;
   }
   function create($person){
@@ -95,6 +100,30 @@ class onezphp_ai_person extends onezphp{
       return $this;
     }
   }
+  //更新适配的用户组
+  function groupids_update(){
+    $deviceid=$this->person['deviceid'];
+    //遍历规则分类
+    $groups=onez('db')->open('rules_group')->record("");
+    $groupids=array();
+    foreach($groups as $group){
+      //判断是否符合标签规则
+      if(!onez('ai')->tags_match($this->info['tags'],$group)){
+        continue;
+      }
+      $groupids[]=$group['groupid'];
+    }
+    
+    if($groupids==$this->person['groupids']){
+      return $this;
+    }
+    
+    $onez=array();
+    $onez['groupids']=implode(',',$groupids);
+    onez('db')->open('person')->update($onez,"id='".$this->id."'");
+    
+    return $this;
+  }
   
   function attrs_set($key,$value){
     if(!$key){
@@ -115,6 +144,7 @@ class onezphp_ai_person extends onezphp{
       $onez['time']=time();
       onez('db')->open('person_attrs')->insert($onez);
     }
+    $this->info[$key]=$value;
     return $this;
   }
   //给目标移除一个标签
@@ -128,6 +158,37 @@ class onezphp_ai_person extends onezphp{
       return $this;
     }
     onez('db')->open('person_attrs')->delete("id='$T[id]'");
+    return $this;
+  }
+  //给此目标发送一条消息
+  function tell($message,&$result){
+    
+    if($this->persons['lastmsg']==$message['message']){
+      return $this;
+    }
+    $this->persons['lastmsg']=$message['message'];
+    
+    $onez=array();
+    $onez['udid']=$this->udid;
+    $onez['status']='reply';
+    $onez['replyid']=0;
+    $onez['you']='ai';
+    $onez['action']='ai';
+    $onez['type']=$message['type'];
+    $onez['deviceid']=(int)$this->deviceid;
+    
+    $onez['data']=serialize($message);
+    $onez['text']=$message['message'];
+    $onez['time']=time();
+    $onez['ip']=onez()->ip();
+    $onez['isread']=1;
+    $msgid_ai=onez('db')->open('history')->insert($onez);
+    
+    $msg=onez('ai')->msg_format($msgid_ai,1);
+    $result['messages'][]=$msg;
+    onez('db')->open('person')->update(array('lastmsg'=>$message['message']),"id='".$this->id."'");
+    
+    
     return $this;
   }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: mysql.dbtables.php 4097 2016-09-09 05:50:02Z onez $
+ * $Id: mysql.dbtables.php 5299 2016-09-20 10:41:06Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -66,6 +66,37 @@ class onezphp_mysql_dbtables extends onezphp{
     }
     $html[]='return $dbtables;';
     return implode("\n",$html);
+  }
+  function tables($info=array()){
+    !$info && $info=array(
+      'dbhost'=>onez('cache')->option('dbhost'),
+      'dbuser'=>onez('cache')->option('dbuser'),
+      'dbpass'=>onez('cache')->option('dbpass'),
+      'dbname'=>onez('cache')->option('dbname'),
+      'dbcharset'=>onez('cache')->option('dbcharset'),
+      'tablepre'=>onez('cache')->option('tablepre',0),
+      'pconnect'=>1,
+    );
+    $link=@mysql_connect($info['dbhost'], $info['dbuser'], $info['dbpass'],1);
+    !$link && onez('showmessage')->error('请检查您的数据库账号是否正确');
+		if(!@mysql_select_db($info['dbname'], $link)){
+      onez('showmessage')->error('数据库名不存在，或者您的账号没有操作此数据库的权限');
+    };
+    mysql_query('set names '.$info['dbcharset'],$link);
+    $dbname=$info['dbname'];
+    $tbl=$info['tablepre'];
+    $rs = mysql_query("SHOW TABLES FROM $dbname",$link); 
+    $tables = array(); 
+    while ($row = mysql_fetch_row($rs)) {
+      $table=array();
+      $tablename=$row[0];
+      if(strpos($tablename,$tbl)===0){
+        $tablename=substr($tablename,strlen($tbl));
+      }
+      $tables[]=$tablename;
+    } 
+    mysql_free_result($rs);
+    return $tables;
   }
   function read($info=array()){
     !$info && $info=array(

@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: setattr_detail.php 3206 2016-09-09 09:31:02Z onez $
+ * $Id: setattr_detail.php 3280 2016-09-18 08:07:56Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -103,6 +103,7 @@ onez('admin')->header();
       </div>
     </div>
     <input type="hidden" name="attrid" value="<?=$attrid?>" />
+    <input type="hidden" name="attrname" value="<?=$attr['subject']?>" />
   </form>
 </section>
 <script type="text/javascript">

@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: index.php 6207 2016-09-09 05:01:34Z onez $
+ * $Id: index.php 6521 2016-09-20 23:19:34Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -25,6 +25,15 @@
 !defined('IN_ONEZ') && exit('Access Denied');
 #当前页地址（导航栏是否选中，和menu.inc.php中的href值一致）
 define('CUR_URL','index.php');
+$action=onez()->gp('action');
+if($action=='mode'){
+  $mode=onez()->gp('mode');
+  onez($mode);
+  $T=onez('db')->open('app')->one("apptype='mode' and enabled=1 and apptoken='$mode' order by appid desc");
+  !$T && onez('showmessage')->error('应用不存在或已被删除，请检查',onez()->href('/index.php'));
+  onez('cache')->option_set(array('mode'=>$mode));
+  onez('showmessage')->success('恭喜！启用'.$T['appname'].'成功',onez()->href('/index.php'));
+}
 
 $G['title']='管理首页';
 #初始化表单
@@ -67,14 +76,14 @@ $device=onez('db')->open('devices')->one("device_token like 'ai.device.dialog%'"
           <!-- small box -->
           <div class="small-box bg-green">
             <div class="inner">
-              <h3><?=onez('db')->open('workers')->rows("")?> <sup style="font-size: 20px">人</sup></h3>
+              <h3><?=onez('db')->open('app')->rows("enabled=1")?> <sup style="font-size: 20px">个</sup></h3>
 
-              <p>人工管理窗口</p>
+              <p>应用中心</p>
             </div>
             <div class="icon">
               <i class="ion ion-stats-bars"></i>
             </div>
-            <a href="<?=onez('ai.admin')->view('worker')?>" target="_blank" class="small-box-footer">点击打开 <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="<?=onez()->href('/app/index.php')?>" class="small-box-footer">点击打开 <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -84,12 +93,12 @@ $device=onez('db')->open('devices')->one("device_token like 'ai.device.dialog%'"
             <div class="inner">
               <h3>--- <sup style="font-size: 20px"></sup></h3>
 
-              <p>超级管理窗口</p>
+              <p>官方论坛</p>
             </div>
             <div class="icon">
               <i class="ion ion-person-add"></i>
             </div>
-            <a href="<?=onez('ai.admin')->view('admin')?>" target="_blank" class="small-box-footer">点击打开 <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="http://ai.bbs.onez.cn" target="_blank" class="small-box-footer">点击打开 <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -97,7 +106,7 @@ $device=onez('db')->open('devices')->one("device_token like 'ai.device.dialog%'"
       
     <div class="box box-danger">
       <div class="box-body">
-        <code>API模式正在开发中，如有兴趣欢迎加入讨论...</code>
+        <code>新版完善中，如有兴趣欢迎加入讨论...</code>
       </div>
     </div>
     
@@ -107,32 +116,46 @@ $device=onez('db')->open('devices')->one("device_token like 'ai.device.dialog%'"
     <div class="col-md-8">
       <div class="box box-info">
         <div class="box-header ">
-          <h3 class="box-title">什么是佳蓝人工智能开源框架</h3>
+          <h3 class="box-title">模式选择</h3>
+          <div class="box-tools pull-right">
+            <a href="<?=onez()->href('/app/index.php')?>">查看更多模式</a>
+          </div>
         </div>
         <div class="box-body">
-          我们的最终目标是，打造一款能够完美连结服务端云平台、移动客户端、电脑网页、电脑软件、智能硬件等任意终端的人工智能框架。您可以免费使用、自主修改及二次开发。
-<h4 class="text-gray">以及为部分应用场景(非已完成功能)</h4>
-<p>网站智能客服</p>
-<ol>
-  <li>设定目标为在线访客</li>
-  <li>自动分析访客的访问规律、页面偏好、是否会员、对什么内容感兴趣等，从而自动为此访客帖上相应的标签</li>
-  <li>根据标签规则，调用不同的资源库，以及分配不同的人工客服</li>
-  <li>例如，有<span class="btn btn-xs btn-info">正式客户</span>标签的用户，和没有此标签的用户，将会调用不同的资源库。</li>
-</ol>
-<p>私人秘书</p>
-<ol>
-  <li>设定目标为您个人独有的私人秘书</li>
-  <li>您可以使用各种终端(电脑网页、手机客户端、智能硬件)记录日常各种数据</li>
-  <li>为您的各种数据进行归类、整理</li>
-  <li>在您需要的时候，快速以各种方式展现给您。如：语音、图表、表格、文本、图片、视频等</li>
-</ol>
-<p>智能家居控制</p>
-<ol>
-  <li>通过手机APP，语音，手势等方式，任意控制您家里的任何智能硬件</li>
-  <li>重要的是，您的智能硬件只听命于您自己的平台。</li>
-</ol>
-<p>……</p>
-<p class="text-red">以上并非此框架预设的功能，实际开发中可根据您的理解任意组合。</p>
+<?
+$mode=onez('cache')->option('mode',0);
+$T=onez('db')->open('app')->record("apptype='mode' and enabled=1 order by apptoken='$mode' desc,appid desc",7);
+if(!$T){
+  echo '<a href="'.onez()->href('/app/index.php').'"><h3 class="text-center text-blue">请先从应用中心》获取更多应用安装您喜欢的模式</h3></a>';
+}
+?>
+
+<ul class="products-list product-list-in-box">
+
+<?
+foreach($T as $rs){
+?>
+                <li class="item">
+                  <div class="product-img">
+                    <img src="<?=$rs['appicon']?>" style="width:50px;height:50px" alt="Product Image">
+                  </div>
+                  <div class="product-info">
+                    <span class="product-title"><?=$rs['appname']?>
+                    <?if($rs['apptoken']==$mode){?>
+                      <span class="label label-warning pull-right">当前</span>
+                    <?}else{?>
+                      <a href="<?=onez()->href('/index.php?action=mode&mode='.$rs['apptoken'])?>" class="label bg-gray pull-right">点击开启</a>
+                    <?}?>
+                    </span>
+                        <span class="product-description">
+                          <?=$rs['summary']?>
+                        </span>
+                  </div>
+                </li>
+<?}?>
+              </ul>
+
+
         </div>
       </div>
     </div>

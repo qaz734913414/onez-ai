@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: demos.php 1094 2016-09-02 10:52:36Z onez $
+ * $Id: demos.php 1088 2016-09-20 09:23:40Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -25,7 +25,7 @@
 !defined('IN_ONEZ') && exit('Access Denied');
 $G['title']='本站可查看演示的扩展';
 
-define('CUR_URL',onez('super')->www('/demos.php'));
+define('CUR_URL',onez()->href('/demos.php'));
 
 onez('admin')->header();
 ?>

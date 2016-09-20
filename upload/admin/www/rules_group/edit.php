@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: edit.php 5086 2016-09-06 18:02:22Z onez $
+ * $Id: edit.php 5293 2016-09-17 23:03:50Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -57,6 +57,7 @@ foreach($T as $rs){
 }
 $form->add(array('label'=>'负责人','type'=>'select','multiple'=>1,'key'=>'workers','value'=>explode(',',$item['workers']),'options'=>$options));
 
+$form->add(array('label'=>'无应答脚本','type'=>'form.plugin.child','ptoken'=>'ai.script.reply','key'=>'script_noreply','hint'=>'符合此条件的用户，但是没有应答时调用','notempty'=>''));
 
 $form->add(array('label'=>'标签判定方式','type'=>'select','key'=>'type','options'=>$options_type));
 

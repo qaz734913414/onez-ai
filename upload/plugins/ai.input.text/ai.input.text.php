@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: ai.input.text.php 2475 2016-09-07 18:42:36Z onez $
+ * $Id: ai.input.text.php 2499 2016-09-17 21:28:04Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -91,18 +91,21 @@ ONEZ;
     if($rule['tpl']){
       $text=trim($rule['tpl']);
       $vars=array();
-      $s='/【([^】]+)】/is';
-      if(@preg_match_all($s,$text,$mat)){
-        $reg=@preg_replace($s,'(.+?)',$text);
-        @preg_match_all($s,$message,$mat2);
-        if(count($mat)==count($mat2)){
-          foreach($mat as $k=>$m){
-            $vars[$mat[$k][0]]=$mat2[$k][0];
-            onez('ai')->person($mat[$k][0],$mat2[$k][0]);
+      $s='【([^】]+)】';
+      if(@preg_match_all("/$s/is",$text,$mat)){
+        $reg=@preg_replace("/$s/is",'(.+?)',$text);
+        if(@preg_match_all("/$reg/isU",$message,$mat2)){
+          
+          foreach($mat[1] as $k=>$m){
+            $vars[$mat[1][$k]]=$mat2[$k+1][0];
           }
-    print_r($vars);
-          return true;
         }
+      }
+      if($vars){
+        foreach($vars as $k=>$v){
+          onez('ai')->person($k,$v);
+        }
+        return true;
       }
     }
     return false;

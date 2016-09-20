@@ -1,65 +1,21 @@
 var onez=onez||{};
 onez.alert=function(message,callback){
-  if($("#hide-alert").length<1){
-    var html='';
-    html+='<div class="modal fade" id="hide-alert" tabindex="-1" role="basic" aria-hidden="true">';
-    html+='<div class="modal-dialog">';
-    html+='<div class="modal-content">';
-    
-    html+='<div class="modal-header">';
-    html+='<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>';
-    html+='<h4 class="modal-title">系统提示</h4>';
-    html+='</div>';
-    html+='<div class="modal-body">'+message+'</div>';
-    html+='<div class="modal-footer">';
-    html+='</div>';
-    
-    html+='</div>';
-    html+='</div>';
-    html+='</div>';
-    $(html).appendTo('body');
-  }
-  $("#hide-alert .modal-body").html(message);
-  $('#hide-alert .modal-footer').empty();
   if(typeof callback=='undefined'){
-    $('<button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>').appendTo('#hide-alert .modal-footer');
+    bootbox.alert(message);
   }else{
-    $('<button type="button" class="btn btn-default">确定</button>').click(callback).appendTo('#hide-alert .modal-footer');
+    bootbox.alert(message,callback);
   }
-  $("#hide-alert").modal("show");
 };
 onez.confirm=function(message,callback){
-  if($("#hide-alert").length<1){
-    var html='';
-    html+='<div class="modal fade" id="hide-alert" tabindex="-1" role="basic" aria-hidden="true">';
-    html+='<div class="modal-dialog">';
-    html+='<div class="modal-content">';
-    
-    html+='<div class="modal-header">';
-    html+='<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>';
-    html+='<h4 class="modal-title">系统提示</h4>';
-    html+='</div>';
-    html+='<div class="modal-body">'+message+'</div>';
-    html+='<div class="modal-footer">';
-    html+='</div>';
-    
-    html+='</div>';
-    html+='</div>';
-    html+='</div>';
-    $(html).appendTo('body');
-  }
-  $("#hide-alert .modal-body").html(message);
-  $('#hide-alert .modal-footer').empty();
   if(typeof callback=='undefined'){
-    $('<button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>').appendTo('#hide-alert .modal-footer');
+    bootbox.alert(message);
   }else{
-    $('<button type="button" class="btn btn-primary">确定</button>').click(function(){
-      $('#hide-alert').modal('hide');
-      callback();
-    }).appendTo('#hide-alert .modal-footer');
-    $('<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>').appendTo('#hide-alert .modal-footer');
+    bootbox.confirm(message,function(r){
+      if(r){
+        callback();
+      }
+    });
   }
-  $("#hide-alert").modal("show");
 };
 onez.formpost=function(form){
   $.post(window.location.href,$(form).serialize(),function(data){
@@ -72,6 +28,14 @@ onez.formpost=function(form){
           onez.alert(data.message,function(){
             if(data.goto=='reload'){
               window.location.reload();
+            }else if(data.goto=='close'){
+              if(parent==self){
+                window.close();
+              }else{
+                if(typeof parent.closeWin=='function'){
+                  parent.closeWin();
+                }
+              }
             }else{
               window.location.href=data.goto;
             }
@@ -79,6 +43,14 @@ onez.formpost=function(form){
         }else{
           if(data.goto=='reload'){
             window.location.reload();
+          }else if(data.goto=='close'){
+            if(parent==self){
+              window.close();
+            }else{
+              if(typeof parent.closeWin=='function'){
+                parent.closeWin();
+              }
+            }
           }else{
             window.location.href=data.goto;
           }

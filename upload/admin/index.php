@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: index.php 809 2016-09-08 07:28:04Z onez $
+ * $Id: index.php 952 2016-09-20 10:12:30Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -52,4 +52,10 @@ $Menu=array_merge($Menu,include(dirname(__FILE__).'/www/menu.inc.php'));
 
 onez('admin')->menu=$Menu;
 
-onez('admin')->start();
+$_onez=onez()->gp('_onez');
+if($_onez && onez()->exists($_onez)){
+  onez()->start(false,false);
+  onez()->start(onez($_onez)->path);
+}else{
+  onez()->start();
+}

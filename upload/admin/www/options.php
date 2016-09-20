@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: options.php 1992 2016-09-07 14:47:30Z onez $
+ * $Id: options.php 2497 2016-09-19 06:46:52Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -41,6 +41,9 @@ $form->add(array('label'=>'机器人名称','type'=>'text','key'=>'myname','hint
 $form->add(array('label'=>'机器人头像','type'=>'upload','key'=>'myavatar','hint'=>'请设置机器人头像','notempty'=>''));
 $form->add(array('label'=>'机器人简介','type'=>'textarea','key'=>'myinfo','hint'=>'请设置机器人简介','notempty'=>''));
 
+$form->add(array('label'=>'佳蓝通信密钥说明','type'=>'html','html'=>'<code>用于快速获取云端扩展，实现更多更强大的功能。申请地址：<a href="http://xl.onez.cn/master" target="_blank">点此申请</a><span class="text-gray">(注册后自动分配)</span></code>'));
+$form->add(array('label'=>'ONEZ_APPID','type'=>'text','key'=>'onez_appid','hint'=>'','notempty'=>''));
+$form->add(array('label'=>'ONEZ_APPKEY','type'=>'text','key'=>'onez_appkey','hint'=>'','notempty'=>''));
 #处理提交
 if($onez=$form->submit()){
   onez('cache')->option_set($onez);

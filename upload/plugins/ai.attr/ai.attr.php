@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: ai.attr.php 380 2016-09-08 15:32:50Z onez $
+ * $Id: ai.attr.php 534 2016-09-18 08:15:24Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -28,7 +28,13 @@ class onezphp_ai_attr extends onezphp{
     
   }
   function doit(&$result,$v,$person_id=0){
-    $attr=onez('db')->open('attrs')->one("attrid='$v[attrid]'");
+    if($v['attrname']){
+      $attr=onez('db')->open('attrs')->one("subject='$v[attrname]'");
+    }elseif($v['attrid']){
+      $attr=onez('db')->open('attrs')->one("attrid='$v[attrid]'");
+    }else{
+      return;
+    }
     list($atoken)=explode('|',$attr['type']);
     $v['attr']=$attr;
     onez($atoken)->doit($result,$v,onez('ai.person')->init($person_id));

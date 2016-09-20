@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: setpwd.php 2125 2016-09-02 10:52:36Z onez $
+ * $Id: setpwd.php 2119 2016-09-20 09:23:40Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -25,7 +25,7 @@
 !defined('IN_ONEZ') && exit('Access Denied');
 $G['title']='修改密码';
 
-define('CUR_URL',onez('super')->www('/setpwd.php'));
+define('CUR_URL',onez()->href('/setpwd.php'));
 
 $form=onez('admin')->widget('form');
 

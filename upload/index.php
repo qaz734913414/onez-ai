@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: index.php 2131 2016-09-09 14:48:18Z onez $
+ * $Id: index.php 3008 2016-09-21 02:23:08Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -23,6 +23,16 @@
 
 
 include_once(dirname(__FILE__).'/init.php');
+
+
+
+if(onez()->exists('cache')){
+  $options=onez('cache')->get('options');
+  if(!$options['is_dbinit']){
+    onez()->location('super.php');
+  }
+}
+
 $G['title']='佳蓝人工智能开源框架';
 onez('showmessage');
 #初始化对话框引擎
@@ -31,9 +41,6 @@ $ui->heads[]=onez('ui')->less(dirname(__FILE__).'/less/style.less');
 
 $ui->header();
 
-$device=onez('db')->open('devices')->one("device_token like 'ai.device.dialog%'");
-
-
 //图标动画
 onez('animate.css')->init();
 ?>
@@ -41,29 +48,44 @@ onez('animate.css')->init();
 </div>
 <?=onez('html5.star')->code('.background')?>
 <?onez('onezjs')->init()?>
-<div class="btns">
-  <p class="logo"><a href="http://www.onez.cn" target="_blank"><img src="images/logo.png" width="280" class="animated bounceInDown" /></a></p>
-  <?if($device){?>
-  <button class="btn btn-info" onclick="<?=onez('dialog')->click(onez('ai.device.dialog')->view('dialog&deviceid='.$device['deviceid']),'1260','720')?>">前端访客演示</button>
-  <?}?>
-  <a href="<?=onez('ai.admin')->view('worker')?>" class="btn btn-success" target="_blank">人工接洽入口</a>
-  <a href="admin" class="btn btn-danger" target="_blank">超级管理后台</a>
-  <a href="super.php" class="btn btn-warning" target="_blank">开发设计模式</a>
-  
-  <p class="info">
-    ✔ 完全开源
-    ✔ 免费
-    ✔ 支持二次开发
-    ✔ Apache开源协议
-  </p>
-  <p class="info">
-    Git地址：<a href="https://github.com/onezcn/onez-ai.git" target="_blank">https://github.com/onezcn/onez-ai.git</a>
-  </p>
-  <p class="info">
-    <a href="https://github.com/onezcn/onez-ai.git" class="btn btn-xs btn-primary" target="_blank">Github</a>
-    <a href="worker" class="btn btn-xs btn-primary" target="_blank">本地下载</a>
-    <a href="http://ai.bbs.onez.cn" class="btn btn-xs btn-primary" target="_blank">论坛交流</a>
-  </p>
+<div class="rows">
+  <div class="col-xs-8 col-xs-offset-2 col-md-4 col-md-offset-4 mainbox">
+    <p class="logo"><a href="http://www.onez.cn" target="_blank"><img src="images/logo.png" width="280" class="animated bounceInDown" /></a></p>
+    <p class="mainBtns">
+      <?
+      if($G['mode']){
+        echo onez($G['mode'])->index_button('电脑版对话');
+      }
+      ?>
+      <a href="admin" class="btn btn-danger" target="_blank">超级管理后台</a>
+      <a href="super.php" class="btn btn-warning" target="_blank">开发设计模式</a>
+    </p>
+    
+    <p class="info">
+      ✔ 完全开源
+      ✔ 免费
+      ✔ 支持二次开发
+      ✔ Apache开源协议
+    </p>
+    <p class="info">
+      Git地址：<a href="https://github.com/onezcn/onez-ai.git" target="_blank">https://github.com/onezcn/onez-ai.git</a>
+    </p>
+    <p class="info">
+      <a href="http://ai.bbs.onez.cn" class="btn btn-xs btn-primary" target="_blank">论坛交流</a>
+      <a href="https://github.com/onezcn/onez-ai.git" class="btn btn-xs btn-primary" target="_blank">Github</a>
+      <a href="http://www.oschina.net/p/onez-ai" class="btn btn-xs btn-primary" target="_blank">开源中国</a>
+      <a href="http://member.down.admin5.com/php/134166.html" class="btn btn-xs btn-primary" target="_blank">A5下载</a>
+      <a href="http://down.chinaz.com/soft/38236.htm" class="btn btn-xs btn-primary" target="_blank">中国站长站</a>
+      <a href="http://ai.onez.cn/cache/ai.zip" class="btn btn-xs btn-primary" target="_blank">本地下载</a>
+      <a href="http://shang.qq.com/wpa/qunwpa?idkey=f7860dfb3e265264f9f359285de578f4fede15f6e8ef183614cdd11645922463" class="btn btn-xs btn-primary" target="_blank">QQ群:185490966</a>
+    </p>
+    <p class="info" style="color:#ffff00">
+      如有疑问，敬请QQ群或论坛，期待您的加入！！！有问必答！！谢谢！
+    </p>
+    <p class="info">
+      前端演示的功能仅是网页对话，实际功能远非如此，欢迎进一步了解！
+    </p>
+  </div>
 </div>
 <script type="text/javascript">
 $(function(){

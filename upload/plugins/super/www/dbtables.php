@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: dbtables.php 4544 2016-09-09 05:50:30Z onez $
+ * $Id: dbtables.php 4623 2016-09-21 01:53:18Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -23,7 +23,7 @@
 
 
 !defined('IN_ONEZ') && exit('Access Denied');
-define('CUR_URL',onez('super')->www('/dbtables.php'));
+define('CUR_URL',onez()->href('/dbtables.php'));
 
 $G['title']='数据表安装与升级';
 $btnname='一键更新';
@@ -62,6 +62,11 @@ if($action=='save'){
       onez('db')->open($sql['table'])->insert($sql['values']);
     }
   }
+  
+  $onez=array();
+  $onez['is_dbinit']='1';
+  onez('cache')->option_set($onez);
+  
   onez()->ok('操作成功','reload');
 }
 onez('admin')->header();

@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: index.php 2320 2016-09-09 09:40:48Z onez $
+ * $Id: index.php 2645 2016-09-18 07:07:24Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -76,6 +76,9 @@ onez('admin')->header();
               负责人密码
             </th>
             <th>
+              使用此负责人的词库
+            </th>
+            <th>
               操作
             </th>
           </tr>
@@ -88,6 +91,13 @@ onez('admin')->header();
             </td>
             <td>
               <span class="text-gray">已加密</span>
+            </td>
+            <td>
+            <?if($rs['is_enabled']){?>
+              <span class="btn btn-xs btn-success">使用</span>
+            <?}else{?>
+              <span class="btn btn-xs btn-default">不使用</span>
+            <?}?>
             </td>
             <td>
               <a href="<?php echo onez()->href('/workers/edit.php?id='.$rs['workerid'])?>" class="btn btn-xs btn-success">

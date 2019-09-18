@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: index.php 105 2016-09-02 10:52:36Z onez $
+ * $Id: index.php 99 2016-09-20 09:23:40Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -23,4 +23,4 @@
 
 
 !defined('IN_ONEZ') && exit('Access Denied');
-onez()->location(onez('super')->www('/options.php'));
+onez()->location(onez()->href('/options.php'));

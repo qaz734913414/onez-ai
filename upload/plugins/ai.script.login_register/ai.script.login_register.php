@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: ai.script.login_register.php 144 2016-09-07 11:40:12Z onez $
+ * $Id: ai.script.login_register.php 625 2016-09-20 17:28:40Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -26,5 +26,25 @@
 class onezphp_ai_script_login_register extends onezphp{
   function __construct(){
     
+  }
+  function menus_app(){
+    $Menu=array (
+      array (
+        'name' => '登录接口设置',
+        'href' => '/login.php',
+        'icon' => 'fa fa-fw fa-gear',
+      ),
+      array (
+        'name' => '注册接口设置',
+        'href' => '/register.php',
+        'icon' => 'fa fa-fw fa-gear',
+      ),
+      array (
+        'name' => '取回密码接口设置',
+        'href' => '/findpwd.php',
+        'icon' => 'fa fa-fw fa-gear',
+      ),
+    );
+    return $Menu;
   }
 }

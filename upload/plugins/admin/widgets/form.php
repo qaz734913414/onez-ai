@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: form.php 2926 2016-09-06 00:41:40Z onez $
+ * $Id: form.php 2933 2016-09-18 00:01:56Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -51,7 +51,7 @@ class onezphp_admin_widgets_form extends onezphp_admin_widgets{
   }
   function form_file($arr){
     $file=dirname(__FILE__).'/form/'.$arr['type'].'.php';
-    if(in_array($arr['type'],array('number','date','password'))){
+    if(in_array($arr['type'],array('number','date','password','file'))){
       $file=dirname(__FILE__).'/form/text.php';
     }
     return $file;

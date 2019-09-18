@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: event_miniwin.php 1375 2016-09-07 09:54:17Z onez $
+ * $Id: event_miniwin.php 1375 2016-09-17 22:40:39Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103

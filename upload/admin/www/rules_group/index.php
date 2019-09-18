@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: index.php 3551 2016-09-06 18:05:52Z onez $
+ * $Id: index.php 4980 2016-09-18 08:11:16Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -36,7 +36,7 @@ if($action=='delete'){
   onez('db')->open('rules_group')->delete("groupid='$id'");
   onez()->ok('删除分类成功','reload');
 }
-$record=onez('db')->open('rules_group')->page("");
+$record=onez('db')->open('rules_group')->page("is_global=0");
 onez('admin')->header();
 ?>
 <section class="content-header">
@@ -70,7 +70,7 @@ onez('admin')->header();
       <div class="box-tools pull-right">
       </div>
     </div>
-    <div class="box-body  table-responsive no-padding">
+    <div class="box-body no-padding">
       <table class="table table-striped">
         <thead>
           <tr>
@@ -81,10 +81,16 @@ onez('admin')->header();
               触发方式
             </th>
             <th>
-              详细规则
+              应答文本
+            </th>
+            <th>
+              高级规则
             </th>
             <th>
               负责人
+            </th>
+            <th>
+              无应答脚本
             </th>
             <th>
               操作
@@ -108,11 +114,21 @@ onez('admin')->header();
             </td>
             <td>
               <?php
+              $n=onez('db')->open('rules_text')->rows("groupid='$rs[groupid]'");
+              ?>
+              共<code><?=$n?></code>条 
+              
+              <a href="<?php echo onez()->href('/rules_text/index.php?groupid='.$rs['groupid'])?>" class="btn btn-xs btn-primary onez-miniwin">
+                管理
+              </a>
+            </td>
+            <td>
+              <?php
               $n=onez('db')->open('rules')->rows("groupid='$rs[groupid]'");
               ?>
               共<code><?=$n?></code>条 
               
-              <a href="<?php echo onez()->href('/rules/index.php?groupid='.$rs['groupid'])?>" class="btn btn-xs btn-primary">
+              <a href="<?php echo onez()->href('/rules/index.php?groupid='.$rs['groupid'])?>" class="btn btn-xs btn-primary onez-miniwin">
                 管理
               </a>
             </td>
@@ -131,12 +147,30 @@ onez('admin')->header();
               ?>
             </td>
             <td>
-              <a href="<?php echo onez()->href('/rules_group/edit.php?id='.$rs['groupid'])?>" class="btn btn-xs btn-success">
-                编辑
-              </a>
-              <a href="javascript:void(0)" onclick="onez.del('<?php echo $rs['groupid'];?>')" class="btn btn-xs btn-danger">
-                删除
-              </a>
+              <?php echo onez('form.plugin.child')->name($rs['script_noreply']);?>
+            </td>
+            <td>
+      <div class="btn-group">
+          <a href="<?php echo onez()->href('/rules_group/edit.php?id='.$rs['groupid'])?>" class="btn btn-xs btn-success">
+            编辑
+          </a>
+          <a href="javascript:void(0)" onclick="onez.del('<?php echo $rs['groupid'];?>')" class="btn btn-xs btn-danger">
+            删除
+          </a>
+          
+          <div class="btn-group">
+            <button type="button" class="btn btn-xs btn-info" data-toggle="dropdown" aria-expanded="false">
+              导入与导出
+            </button>
+            <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="<?php echo onez()->href('/rules/export.php?groupid='.$rs['groupid'])?>" class="onez-miniwin">导出当前词库</a></li>
+              <li><a href="<?php echo onez()->href('/rules/import.php?groupid='.$rs['groupid'])?>" class="onez-miniwin">导入外部词库</a></li>
+            </ul>
+          </div>
+      </div>
             </td>
           </tr>
           <?php }?>

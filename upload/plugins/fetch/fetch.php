@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: fetch.php 2947 2016-09-05 10:23:16Z onez $
+ * $Id: fetch.php 4614 2016-09-20 09:23:35Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -29,35 +29,86 @@ class onezphp_fetch extends onezphp{
   function __construct(){
     
   }
-  function get($token){
-    global $G;
-    $classFile=ONEZ_ROOT.ONEZ_NODE_PATH.'/'.$token.'/'.$token.'.php';
-    if(!file_exists($classFile)){
-      $post=array(
-        'token'=>$token,
-      );
-      set_time_limit(0);
-      $onez_appid=onez('cache')->option('onez_appid',0);
-      $onez_appkey=onez('cache')->option('onez_appkey',0);
-      if(!$onez_appid || !$onez_appkey){
-        $onez_appid=$G['onez_appid'];
-        $onez_appkey=$G['onez_appkey'];
-      }
-      if(!$onez_appid || !$onez_appkey){
-        if(defined('ONEZ_APPID') && defined('ONEZ_APPKEY')){
-          $onez_appid=ONEZ_APPID;
-          $onez_appkey=ONEZ_APPKEY;
+  function options(){
+    $options=array();
+    $options['onez_appid_help']=array('label'=>'佳蓝通信密钥说明','type'=>'html','html'=>'<code>用于快速获取云端扩展，实现更多更强大的功能。申请地址：<a href="http://xl.onez.cn/master/" target="_blank">点此申请</a><span class="text-gray">(注册后自动分配)</span></code>');
+    $options['onez_appid']=array('label'=>'ONEZ_APPID','type'=>'text','key'=>'onez_appid','hint'=>'','notempty'=>'');
+    $options['onez_appkey']=array('label'=>'ONEZ_APPKEY','type'=>'text','key'=>'onez_appkey','hint'=>'','notempty'=>'');
+    return $options;
+  }
+  function find($path,$offset=false){
+    if($offset===false){
+      $offset=strlen($path)+1;
+    }
+    $files=array();
+    $glob=glob("$path/*");
+    if($glob){
+      foreach($glob as $v){
+        if(is_dir($v)){
+          $files=array_merge($files,$this->find($v,$offset));
+        }else{
+          $files[substr($v,$offset)]=md5_file($v);
         }
       }
+    }
+    return $files;
+  }
+  function check(){
+    $myfiles=array();
+    $glob=glob(ONEZ_ROOT.ONEZ_NODE_PATH.'/*');
+    if($glob){
+      foreach($glob as $v){
+        $token=basename($v);
+        $myfiles[$token]=$this->find($v);
+      }
+    }
+    $post=array(
+      'plugins'=>base64_encode(serialize($myfiles)),
+    );
+    $mydata=onez()->post('http://xl.onez.cn/api/check.php',http_build_query($post),array(
+      'timeout'=>600,
+      'headers'=>array(
+        'Authorization: '.$this->auth(),
+      )
+    ));
+    return json_decode($mydata,1);
+  }
+  function auth(){
+    if(onez()->exists('cache')){
+      $onez_appid=onez('cache')->option('onez_appid',0);
+      $onez_appkey=onez('cache')->option('onez_appkey',0);
+    }
+    if(!$onez_appid || !$onez_appkey){
+      $onez_appid=$G['onez_appid'];
+      $onez_appkey=$G['onez_appkey'];
+    }
+    if(!$onez_appid || !$onez_appkey){
+      if(defined('ONEZ_APPID') && defined('ONEZ_APPKEY')){
+        $onez_appid=ONEZ_APPID;
+        $onez_appkey=ONEZ_APPKEY;
+      }
+    }
+    if(onez()->exists('cache')){
       if(!$onez_appid || !$onez_appkey){
         $onez_appid=onez('cache')->option('onez_appid');
         $onez_appkey=onez('cache')->option('onez_appkey');
       }
+    }
+    return $onez_appid.' '.md5($onez_appkey);
+  }
+  function get($token,$focus=0){
+    global $G;
+    $classFile=ONEZ_ROOT.ONEZ_NODE_PATH.'/'.$token.'/'.$token.'.php';
+    if($focus || !file_exists($classFile)){
+      $post=array(
+        'token'=>$token,
+      );
+      set_time_limit(0);
       
       $mydata=onez()->post('http://xl.onez.cn/api/fetch.php',http_build_query($post),array(
         'timeout'=>600,
         'headers'=>array(
-          'Authorization: '.$onez_appid.' '.md5($onez_appkey),
+          'Authorization: '.$this->auth(),
         )
       ));
       if(strpos($mydata,'onez')===0){

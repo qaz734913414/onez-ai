@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: menu.inc.php 651 2016-09-05 10:32:12Z onez $
+ * $Id: menu.inc.php 1009 2016-09-20 09:23:40Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -31,25 +31,44 @@ $Menu=array (
   ),
   array (
     'name' => '网站参数设置',
-    'url' => onez('super')->www('/options.php'),
-    'icon' => '',
-  ),
-  array (
-    'name' => '数据表安装与升级',
-    'url' => onez('super')->www('/dbtables.php'),
+    'url' => onez()->href('/options.php'),
     'icon' => '',
   ),
   array (
     'name' => '设置管理账号和密码',
-    'url' => onez('super')->www('/setpwd.php'),
+    'url' => onez()->href('/setpwd.php'),
     'icon' => '',
   ),
   array (
-    'name' => '查看演示',
-    'url' => onez('super')->www('/demos.php'),
+    'name' => '数据表安装与升级',
+    'url' => onez()->href('/dbtables.php'),
+    'icon' => '',
+  ),
+  array (
+    'name' => '插件更新检测',
+    'url' => onez()->href('/plugins.php'),
+    'icon' => '',
+  ),
+  array (
+    'name' => '更新网站至最新版',
+    'url' => onez()->href('/upgrade.php'),
     'icon' => '',
   ),
 );
+$hasDemo=0;
+foreach(_get_all_plugins() as $ptoken){
+  if(method_exists(onez($ptoken),'demo')){
+    $hasDemo=1;
+    break;
+  }
+}
+if($hasDemo){
+  $Menu[]=array (
+    'name' => '查看演示',
+    'url' => onez()->href('/demos.php'),
+    'icon' => '',
+  );
+}
 
 return $Menu;
 

@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: cache.php 2836 2016-09-07 14:51:24Z onez $
+ * $Id: cache.php 2987 2016-09-18 15:57:54Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -131,7 +131,11 @@ class onezphp_cache extends onezphp{
     }
     $value=$G['options'][$key];
     if($must && !$value){
-      exit('请正确设置网站参数['.$key.']');
+      if(onez()->exists('showmessage')){
+        onez('showmessage')->error('请正确设置网站参数['.$key.'] By Super!');
+      }else{
+        exit('请正确设置网站参数['.$key.']');
+      }
     }
     return $value;
   }

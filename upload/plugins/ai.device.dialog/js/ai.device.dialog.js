@@ -3,15 +3,23 @@
   //输出一条消息
   ai.print=function(msg,orderby){
     if(typeof msg.msgid!='undefined'){
-      if($('.msg-item-usr[data-msgid="'+msg.msgid+'"]').length>0){
+      if(typeof msg.tmpid!='undefined'){
+        var mymsg=$('.msg-item[data-msgid="'+msg.tmpid+'"]');
+        mymsg.attr('data-msgid',msg.msgid);
+        mymsg.find('.msg-item-message').html(msg.message);
         return;
       }
-      msg.msgid=parseInt(msg.msgid);
+      if(!isNaN(msg.msgid)){
+        if($('.msg-item[data-msgid="'+msg.msgid+'"]').length>0){
+          return;
+        }
+        msg.msgid=parseInt(msg.msgid);
+        if(msg.msgid>ai.max_msgid){
+          ai.max_msgid=msg.msgid;
+        }
+      }
     }else{
       msg.msgid=0;
-    }
-    if(msg.msgid>ai.max_msgid){
-      ai.max_msgid=msg.msgid;
     }
     if(typeof orderby=='undefined'){
       orderby='asc';
@@ -29,14 +37,29 @@
       msg.pos='me';
       msg.nick='您';
     }
-    if(typeof msg.type!='undefined' && msg.type=='image'){
-      msg.message='<img src="'+msg.message+'" class="image" />';
+    if(typeof msg.type!='undefined'){
+      if(msg.type=='image'){
+        msg.message='<img src="'+msg.message+'" class="image" />';
+      }else if(msg.type=='select'){
+        msg.message='';
+        if(typeof msg.title!='undefined' && msg.title.length>0){
+          msg.message+='<p class="guide-title">'+msg.title+'</p>';
+        }
+        if(typeof msg.options!='undefined'){
+          for(var i=0;i<msg.options.length;i++){
+            var m=msg.options[i];
+            if(typeof m.token!='undefined'){
+              msg.message+='<p>'+(i+1)+'、<a href="javascript:;" onclick="onez.ai.click(\''+m.token+'\')">'+m.name+'</a></p>';
+            }
+          }
+        }
+      }
     }
-    var div=$('<div class="msg-item msg-pos-'+msg.pos+'" />');
+    var div=$('<div class="msg-item msg-pos-'+msg.pos+'" />').attr('data-msgid',msg.msgid);
     
     var time=ai.time(msg.time);
     
-    var usr=$('<div class="msg-item-usr" />').attr('data-msgid',msg.msgid).html(msg.nick+'\t'+time);
+    var usr=$('<div class="msg-item-usr" />').html(msg.nick+'\t'+time);
     usr.appendTo(div);
     var message=$('<div class="msg-item-message" />').html(msg.message);
     message.appendTo(div);
@@ -51,6 +74,7 @@
     
     div.find('img').bind('load',ai.tobottom);
     ai.tobottom();
+    $('body').trigger('ai-print',msg);
   };
   //滚动到最底部
   ai.tobottom=function(){
@@ -62,10 +86,25 @@
     if(message.length<1){
       return;
     }
+    var type='text';
+    var tmpid='tmp-'+Math.random();
+    var time=Math.floor(Date.parse(new Date())/1000);
     var msg={
-      type:'text',
+      type:type,
+      tmpid:tmpid,
+      time:time,
       message:message,
     }
+    ai.print({
+      msgid:tmpid,
+      time:time,
+      action:'me',
+      status:'new',
+      you:'me',
+      type:type,
+      message:message
+    },'asc');
+      
     $('#inputbox').val('').get(0).focus();
     ai.send(msg);
   };
@@ -76,6 +115,10 @@
         for(var i=0;i<data.messages.length;i++){
           var msg=data.messages[i];
           ai.print(msg);
+          
+          var postMsg=$.extend({mod:'msg',udid:ai.udid}, msg);
+          $('body').trigger('ai-send',postMsg);
+          //onez.websocket.send(postMsg);
         }
       }
     });
@@ -92,6 +135,7 @@
     deviceid:_onez_ai_deviceid,
     udid:ai.udid
   };
+  start['终端']='网页对话框';
   start['系统语言']=(navigator.systemLanguage?navigator.systemLanguage:navigator.language);
   start['屏幕色深']=screen.colorDepth;
   start['屏幕尺寸']=screen.width + '*' + screen.height;
@@ -116,6 +160,13 @@
           e.stopPropagation();
         }
       });
+      $('#inputbox').bind('keyup input',function(e){
+        $('body').trigger('ai-init',{
+          mod:'input',
+          udid:ai.udid,
+          text:$(this).val()
+        });
+      });
       ai.newmsg(ai.history);
     }
   });
@@ -131,6 +182,7 @@
         }
         if(newmsgids.length>0){
           ai.isread(newmsgids);
+          onez.sound.play('newmsg');
         }
         
       }
@@ -151,6 +203,8 @@
       ai.post('auto',{auto:_onez_ai_auto},function(data){
         
       });
+      
+      $('body').trigger('ai-ready');
     });
   };
   //设置消息已读

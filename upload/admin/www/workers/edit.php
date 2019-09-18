@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: edit.php 2706 2016-09-09 09:40:12Z onez $
+ * $Id: edit.php 2810 2016-09-18 07:05:48Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -52,6 +52,7 @@ if($id){
 }else{
   $form->add(array('label'=>'负责人密码','type'=>'text','key'=>'password','hint'=>'请填写负责人密码','notempty'=>'负责人密码不能为空'));
 }
+$form->add(array('label'=>'使用此人此责任人的词库','type'=>'checkbox','key'=>'is_enabled'));
 
 #处理提交
 if($onez=$form->submit()){

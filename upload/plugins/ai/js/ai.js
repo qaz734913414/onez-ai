@@ -27,6 +27,24 @@ if(typeof onez.ai=='undefined'){
       }
     },'json');
   };
+  //超级点击事件
+  ai.click=function(token){
+    if(token.indexOf('onez://')!=-1){
+      var msg={
+        type:'text',
+        message:token,
+      }
+      ai.send(msg);
+    }else if(token.indexOf('http://')!=-1 || token.indexOf('https://')!=-1){
+      
+    }else{
+      var msg={
+        type:'text',
+        message:token,
+      }
+      ai.send(msg);
+    }
+  };
   //发送一组数据
   ai.sendList=[];
   ai.send=function(obj){
@@ -119,7 +137,7 @@ if(typeof onez.ai=='undefined'){
   ai.init=function(){
     ai.cur_update=0;
     ai.active();
-    ai.timer_update=setInterval('onez.ai.update()',100);
+    //ai.timer_update=setInterval('onez.ai.update()',100);
   };
   //设置为活动
   ai.active=function(){

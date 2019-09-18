@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: ai.admin.php 10377 2016-09-09 04:33:18Z onez $
+ * $Id: ai.admin.php 12496 2016-09-18 10:37:04Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -110,8 +110,12 @@ ONEZ;
   }
   function output(){
     $deviceid=(int)onez()->gp('deviceid');
-    $device=onez('db')->open('devices')->one("deviceid='$deviceid'");
-    list($dtoken)=explode('|',$device['device_token']);
+    if($deviceid){
+      $device=onez('db')->open('devices')->one("deviceid='$deviceid'");
+      list($dtoken)=explode('|',$device['device_token']);
+    }else{
+      $dtoken='ai.device.dialog';
+    }
     
     $personid=(int)onez()->gp('personid');
     if($personid){
@@ -148,6 +152,7 @@ ONEZ;
       include_once(dirname(__FILE__).'/php/login.php');
       exit();
     }
+    $G['myid']='w-'.$workerid;
     $G['grade']='worker';
     $G['title']='人工管理窗口';
     include_once(dirname(__FILE__).'/php/dialog.php');
@@ -174,6 +179,7 @@ ONEZ;
     if(!$admin){
       onez()->location(onez()->homepage().'/admin');
     }
+    $G['myid']='a-'.$userid;
     $G['grade']='admin';
     $G['title']='超级管理窗口';
     include_once(dirname(__FILE__).'/php/dialog.php');
@@ -271,13 +277,67 @@ ONEZ;
     
     onez()->output($result);
   }
+  //基本近联系人
+  function lastlist(){
+    global $G;
+    
+    $this->check();
+    $result=array();
+    if($G['plat']=='admin'){
+      
+    }elseif($G['plat']=='worker'){
+      
+    }
+    $P=array();
+    //
+    $persons=array();
+    $T=onez('db')->open('person')->record("1 order by lasttime desc");
+    foreach($T as $rs){
+      $noread=onez('db')->open('history')->rows("udid='$rs[udid]' and action='person' and status='ask'");
+      $status='';
+      if($noread>0){
+        $status.='<span class="badge">'.$noread.'</span>';
+      }
+      $p=onez('ai.person')->init($rs);
+      $person=array(
+        'id'=>$rs['id'],
+        'udid'=>$rs['udid'],
+        'deviceid'=>$rs['deviceid'],
+        'avatar'=>$p->info('头像'),
+        'status'=>$status,
+        'nickname'=>$p->info('昵称'),
+        'summary'=>onez()->substr($rs['lastmsg'],0,20),
+      );
+      $persons[]=$person;
+    }
+    $result['persons']=$persons;
+    
+    onez()->output($result);
+  }
+  //目标信息
+  function person_history(){
+    global $G;
+    
+    $this->check();
+    $udid=onez()->gp('udid');
+    $msgid=(int)onez()->gp('msgid');
+    
+    $result['messages']=onez('ai')->history($udid,$msgid);
+    
+    onez()->output($result);
+  }
   //目标信息
   function person_info(){
     global $G;
     
     $this->check();
+    $udid=onez()->gp('udid');
     $person_id=(int)onez()->gp('person_id');
-    $person=onez('db')->open('person')->one("id='$person_id'");
+    if($person_id){
+      $person=onez('db')->open('person')->one("id='$person_id'");
+    }else{
+      $person=onez('db')->open('person')->one("udid='$udid'");
+    }
     $result=array();
     if($G['plat']=='admin'){
       
@@ -286,7 +346,28 @@ ONEZ;
     }
     
     
-    $result['messages']=onez('ai')->history($person['udid']);
+    if($person_id){
+      $result['messages']=onez('ai')->history($person['udid']);
+    }else{
+      $noread=onez('db')->open('history')->rows("udid='$udid' and action='person' and status='ask'");
+      $status='';
+      if($noread>0){
+        $status.='<span class="badge">'.$noread.'</span>';
+      }
+      if($person['id']==$person_id){
+        $P=$person;
+      }
+      $p=onez('ai.person')->init($person);
+      $personinfo=array(
+        'id'=>$person['id'],
+        'deviceid'=>$person['deviceid'],
+        'avatar'=>$p->info('头像'),
+        'status'=>$status,
+        'nickname'=>$p->info('昵称'),
+        'summary'=>onez()->substr($person['lastmsg'],0,20),
+      );
+      $result=$personinfo;
+    }
     
     onez()->output($result);
   }
@@ -295,9 +376,9 @@ ONEZ;
     global $G;
     
     $this->check();
-    $person_id=(int)onez()->gp('person_id');
+    $udid=onez()->gp('udid');
     
-    $person=onez('ai.person')->init($person_id);
+    $person=onez('ai.person')->init($udid);
     
     $info=$person->info;
     

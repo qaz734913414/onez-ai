@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: login.php 2769 2016-09-09 15:11:04Z onez $
+ * $Id: login.php 2777 2016-09-21 01:26:44Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -35,6 +35,7 @@ $form->add(array('label'=>'超级管理密码','type'=>'password','key'=>'admin_
 
 #处理提交
 if($onez=$form->submit()){
+  ob_clean();
   $admin_username=$onez['admin_username'];
   $admin_password=$onez['admin_password'];
   !$admin_username && onez()->error('超级管理账号不能为空');
@@ -46,7 +47,7 @@ if($onez=$form->submit()){
   md5($admin_password)!=onez('cache')->option('admin_password') && onez()->error('超级管理账号或密码不正确');
   
   onez('cache')->cookie('superinfo',array('username'=>$admin_username),1);
-  onez()->ok('登录成功',onez('super')->www('/index.php'));
+  onez()->ok('登录成功',onez()->href('/index.php'));
 }
 onez('admin')->header();
 ?>

@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: init.php 1774 2016-09-05 17:37:00Z onez $
+ * $Id: init.php 1848 2016-09-20 09:23:40Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -53,13 +53,16 @@ function _get_all_plugins(){
 #网站是否已安装
 $options=onez('cache')->get('options');
 if(!$options['is_install']){
-  onez()->location(onez('install')->www('/index.php'));
+  $_REQUEST['mod']='/index.php';
+  //onez()->location(onez('install')->www('/index.php'));
+  onez('install')->www();
+  exit();
 }
 #是否已登录
 if(onez()->gp('mod')!='/login.php'){
   $superinfo=onez('cache')->cookie('superinfo');
-  if(!$superinfo['username']){
-    onez()->location(onez('super')->www('/login.php'));
+  if(!$superinfo || !$superinfo['username']){
+    onez()->location(onez()->href('/login.php'));
   }
 }
 #网站样式
@@ -76,7 +79,7 @@ foreach($plugins as $ptoken){
     
     $Menu[]=array (
       'name' => '数据库分析',
-      'url' => onez('super')->www('/dbtables.php'),
+      'url' => onez()->href('/dbtables.php'),
       'icon' => '',
     );
     break;

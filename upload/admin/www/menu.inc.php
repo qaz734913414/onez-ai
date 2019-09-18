@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: menu.inc.php 1347 2016-09-09 05:18:48Z onez $
+ * $Id: menu.inc.php 2035 2016-09-20 23:29:38Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -40,10 +40,21 @@ $Menu=array (
     'icon' => 'fa fa-fw fa-gear',
   ),
   array (
+    'name' => '应用中心',
+    'href' => '/app/index.php',
+    'icon' => 'fa fa-fw fa-trophy',
+  ),
+  array (
+    'name' => '备份与还原',
+    'href' => '/cbak/index.php',
+    'icon' => 'fa fa-fw fa-random',
+  ),
+  array (
     'name' => '修改管理密码',
     'href' => '/account/setpwd.php',
     'icon' => 'fa fa-fw fa-key',
   ),
+  /*
   array (
     'name' => '智能配置',
     'href' => '',
@@ -70,6 +81,16 @@ $Menu=array (
     'icon' => 'fa fa-fw fa-graduation-cap',
   ),
   array (
+    'name' => '全局自动应答',
+    'href' => '/global/index.php',
+    'icon' => 'fa fa-fw fa-hand-peace-o',
+  ),
+  array (
+    'name' => '多级指引',
+    'href' => '/guide/index.php',
+    'icon' => 'fa fa-fw fa-tree',
+  ),
+  array (
     'name' => '人工辅助',
     'href' => '',
     'icon' => 'fa fa-fw fa-newspaper-o',
@@ -79,6 +100,17 @@ $Menu=array (
     'href' => '/workers/index.php',
     'icon' => 'fa fa-fw fa-gg',
   ),
+  */
 );
+
+$mode=onez('cache')->option('mode',0);
+if($mode){
+  if(method_exists(onez($mode),'menus_mode')){
+    $M=onez($mode)->menus_mode();
+    if($M && is_array($M)){
+      $Menu=array_merge($Menu,$M);
+    }
+  }
+}
 
 return $Menu;

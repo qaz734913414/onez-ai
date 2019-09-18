@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: onezphp.php 16312 2016-09-04 16:20:56Z onez $
+ * $Id: onezphp.php 17183 2016-09-21 01:39:26Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -108,9 +108,20 @@ class onezphp{
   }
   function www($method=false){
     if($method===false){
-      onez()->start($this->path);
+      $_onez=onez()->gp('_onez');
+      if($_onez && onez()->exists($_onez)){
+        onez()->start($this->path,false);
+        onez()->start(onez($_onez)->path);
+      }else{
+        onez()->start($this->path);
+      }
     }else{
-      return $this->view('www&mod='.str_replace('?','&',$method));
+      $method=str_replace('?','&',$method);
+      $_onez=onez()->gp('_onez');
+      if($_onez && onez()->exists($_onez) && strpos($method,'_onez')===false){
+        $method.='&_onez='.$_onez;
+      }
+      return $this->view('www&mod='.$method);
     }
   }
   function autoview($method,$show=0){
@@ -154,6 +165,15 @@ class onezphp{
     }
     $this->_times++;
     return true;
+  }
+  function href($href,$inplugin=0){
+    if(strpos($href,'?')===false){
+      $href.='?';
+    }else{
+      $href.='&';
+    }
+    $href.='_onez='.$this->token;
+    return onez()->href($href);
   }
 }
 /**
@@ -525,7 +545,7 @@ class onezphp_onezphp extends onezphp{
   * @return
   */
   function cururl($add=false,$del=false){
-    $get=$_REQUEST;
+    $get=$_GET;
     $o=explode('/',onez()->homepage());
     if($add){
       foreach($add as $k=>$v){
@@ -546,7 +566,7 @@ class onezphp_onezphp extends onezphp{
     }
     return $url;
   }
-  function start($root=false){
+  function start($root=false,$ismod=true){
     global $G;
     $mod=onez()->gp('mod');
     (!$mod || $mod=='/') && $mod='index.php';
@@ -557,7 +577,7 @@ class onezphp_onezphp extends onezphp{
       $root=getcwd();
     }
     $modFile=$root.'/www/'.$mod;
-    if(file_exists($modFile)){
+    if(!$ismod || file_exists($modFile)){
       
       $path='/';
       $inits=array('/');
@@ -575,22 +595,32 @@ class onezphp_onezphp extends onezphp{
           include_once($initFile);
         }
       }
-      
-      include($modFile);
-      exit();
+      if($ismod){
+        include($modFile);
+        exit();
+      }
     }else{
       echo 'MOD"'.$mod.'"不存在';
     }
     return false;
   }
-  function href($href){
-    return '?mod='.str_replace('?','&',$href);
+  function href($href,$inplugin=0){
+    parse_str('mod='.str_replace('?','&',$href),$info);
+    if(!$info['_onez']){
+      $_onez=onez()->gp('_onez');
+      if($inplugin && $_onez && onez()->exists($_onez)){
+        $info['_onez']=$_onez;
+      }
+    }
+    return '?'.http_build_query($info);
   }
   function output($A){
+    ob_clean();
     echo json_encode($A);
     exit();
   }
   function ok($text,$url){
+    ob_clean();
     $A=array(
       'status'=>'success',
       'message'=>$text?$text:'操作成功',
@@ -600,6 +630,7 @@ class onezphp_onezphp extends onezphp{
     exit();
   }
   function error($text){
+    ob_clean();
     $A=array(
       'error'=>$text,
     );

@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: super.php 933 2016-09-05 15:50:44Z onez $
+ * $Id: super.php 765 2016-09-20 09:23:40Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -36,8 +36,4 @@ class onezphp_super extends onezphp{
     return $options;
   }
   
-  function plugin_href($token,$href){
-    $href=str_replace('?','&',$href);
-    return onez('super')->www('/plugin.php?_token='.urlencode($token).'&_href='.$href);
-  }
 }

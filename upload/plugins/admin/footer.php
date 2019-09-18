@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: footer.php 3435 2016-09-09 05:22:20Z onez $
+ * $Id: footer.php 3500 2016-09-17 22:43:10Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -68,7 +68,7 @@ $(function(){
       $('#hide-miniwin h4').text(title);
       var w=$(window).width()-100;
       if(w>800){
-        //w=800;
+        w=800;
       }
       $('#hide-miniwin .modal-dialog').css({width:w+'px'});
       $('#hide-miniwin .modal-body').css({padding:'0px'});
@@ -77,7 +77,9 @@ $(function(){
       $("#hide-miniwin").draggable({
 				cursor: "move",
 				handle: '.modal-header'
-			}).modal({backdrop: 'static', keyboard: false});
+			}).modal({backdrop: 'static', keyboard: false}).on('hide.bs.modal',function(){
+        location.reload();
+      });
       var _scrollHeight = $(document).scrollTop();
       var wHeight = $(window).height();
       var this_height=wHeight-100;

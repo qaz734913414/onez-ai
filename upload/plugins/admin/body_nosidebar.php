@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: body_nosidebar.php 993 2016-09-05 10:26:28Z onez $
+ * $Id: body_nosidebar.php 993 2016-09-17 22:32:49Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103

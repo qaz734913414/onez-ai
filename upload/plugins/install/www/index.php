@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: index.php 1880 2016-09-05 10:26:27Z onez $
+ * $Id: index.php 1946 2016-09-21 02:18:06Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -35,6 +35,7 @@ $form->add(array('label'=>'确认超级管理密码','type'=>'password','key'=>'
 
 #处理提交
 if($onez=$form->submit()){
+  ob_clean();
   $admin_username=$onez['admin_username'];
   $admin_password1=$onez['admin_password1'];
   $admin_password2=$onez['admin_password2'];
@@ -46,7 +47,7 @@ if($onez=$form->submit()){
     'admin_username'=>$admin_username,
     'admin_password'=>md5($admin_password2),
   ));
-  onez()->ok(1,onez('super')->www('/index.php'));
+  onez()->ok('安装成功，请登录',onez()->homepage());
 }
 onez('admin')->header();
 ?>
@@ -62,7 +63,7 @@ onez('admin')->header();
   <p>超级管理账号用于管理各扩展配置信息，请务必妥善保存</p>
 </div>
 	  <?=$form->code();?>
-	  <button class="btn btn-success" type="submit">下一步</button>
+	  <button class="btn btn-block btn-lg btn-success" type="submit">保存账号信息并快速安装</button>
     <input type="hidden" name="action" value="save">
 </form>
 

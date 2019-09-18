@@ -1,7 +1,7 @@
 <?php
 
 /* ========================================================================
- * $Id: header.php 3556 2016-09-05 12:46:30Z onez $
+ * $Id: header.php 3709 2016-09-17 22:40:14Z onez $
  * http://ai.onez.cn/
  * Email: www@onez.cn
  * QQ: 6200103
@@ -125,10 +125,19 @@ window.onerror=function(){
 <?if($G['webdomain']){
   echo 'document.domain="'.$G['webdomain'].'";';
 }?>
+<?
+$miniwin=onez()->gp('miniwin');
+if(!$miniwin){
+  $get=$_GET;
+  $get['miniwin']=1;
+  ?>
+if(top!=self){
+  location.href='<?=$_SERVER['PHP_SELF'].'?'.http_build_query($get)?>';
+}
+<?}?>
 </script>
 </head>
 <?
-$miniwin=onez()->gp('miniwin');
 if($this->menu){
   include_once(dirname(__FILE__).'/body_sidebar.php');
 }else{
